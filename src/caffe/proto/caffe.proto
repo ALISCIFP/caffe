@@ -306,7 +306,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 147 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 148 (last added: minrelu_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -393,6 +393,7 @@ message LayerParameter {
   optional RecurrentParameter recurrent_param = 146;
   optional ReductionParameter reduction_param = 136;
   optional ReLUParameter relu_param = 123;
+  optional MinReLUParameter minrelu_param = 147;
   optional ReshapeParameter reshape_param = 133;
   optional ScaleParameter scale_param = 142;
   optional SigmoidParameter sigmoid_param = 124;
@@ -985,6 +986,20 @@ message ReLUParameter {
   // improve neural network acoustic models. In ICML Workshop on Deep Learning
   // for Audio, Speech, and Language Processing.
   optional float negative_slope = 1 [default = 0];
+  enum Engine {
+    DEFAULT = 0;
+    CAFFE = 1;
+    CUDNN = 2;
+  }
+  optional Engine engine = 2 [default = DEFAULT];
+}
+
+// Message that stores parameters used by MinReLULayer
+message MinReLUParameter {
+  // Allow non-zero slope for positive inputs to speed up optimization
+  // Described in: contact Zengming Shen email: szm0219@gmail.com
+
+  optional float positive_slope = 1 [default = 0];
   enum Engine {
     DEFAULT = 0;
     CAFFE = 1;
