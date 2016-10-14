@@ -11,6 +11,7 @@
 #include "caffe/layers/lrn_layer.hpp"
 #include "caffe/layers/pooling_layer.hpp"
 #include "caffe/layers/relu_layer.hpp"
+#include "caffe/layers/minrelu_layer.hpp"
 #include "caffe/layers/sigmoid_layer.hpp"
 #include "caffe/layers/softmax_layer.hpp"
 #include "caffe/layers/tanh_layer.hpp"
@@ -22,6 +23,7 @@
 #include "caffe/layers/cudnn_lrn_layer.hpp"
 #include "caffe/layers/cudnn_pooling_layer.hpp"
 #include "caffe/layers/cudnn_relu_layer.hpp"
+#include "caffe/layers/cudnn_minrelu_layer.hpp"
 #include "caffe/layers/cudnn_sigmoid_layer.hpp"
 #include "caffe/layers/cudnn_softmax_layer.hpp"
 #include "caffe/layers/cudnn_tanh_layer.hpp"
@@ -168,6 +170,29 @@ shared_ptr<Layer<Dtype> > GetReLULayer(const LayerParameter& param) {
 }
 
 REGISTER_LAYER_CREATOR(ReLU, GetReLULayer);
+    
+// Get minrelu layer according to engine.
+template <typename Dtype>
+shared_ptr<Layer<Dtype> > GetMinReLULayer(const LayerParameter& param) {
+  MinReLUParameter_Engine engine = param.minrelu_param().engine();
+  if (engine == MinReLUParameter_Engine_DEFAULT) {
+    engine = MinReLUParameter_Engine_CAFFE;
+#ifdef USE_CUDNN
+    engine = MinReLUParameter_Engine_CUDNN;
+#endif
+  }
+  if (engine == MinReLUParameter_Engine_CAFFE) {
+    return shared_ptr<Layer<Dtype> >(new MinReLULayer<Dtype>(param));
+#ifdef USE_CUDNN
+  } else if (engine == MinReLUParameter_Engine_CUDNN) {
+    return shared_ptr<Layer<Dtype> >(new CuDNNMinReLULayer<Dtype>(param));
+#endif
+  } else {
+    LOG(FATAL) << "Layer " << param.name() << " has unknown engine.";
+  }
+}
+
+REGISTER_LAYER_CREATOR(MinReLU, GetMinReLULayer);
 
 // Get sigmoid layer according to engine.
 template <typename Dtype>
