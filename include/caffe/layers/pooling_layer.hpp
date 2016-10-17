@@ -31,7 +31,9 @@ class PoolingLayer : public Layer<Dtype> {
   // others can only output the pooled inputs.
   virtual inline int MaxTopBlobs() const {
     return (this->layer_param_.pooling_param().pool() ==
-            PoolingParameter_PoolMethod_MAX) ? 2 : 1;
+            PoolingParameter_PoolMethod_MAX) ||
+            (this->layer_param_.pooling_param().pool() ==
+            PoolingParameter_PoolMethod_MIN) ? 2 : 1;
   }
 
  protected:
@@ -53,6 +55,8 @@ class PoolingLayer : public Layer<Dtype> {
   bool global_pooling_;
   Blob<Dtype> rand_idx_;
   Blob<int> max_idx_;
+  Blob<int> min_idx_;
+
 };
 
 }  // namespace caffe
