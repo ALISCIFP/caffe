@@ -29,8 +29,8 @@ void MinReLULayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const int count = bottom[0]->count();
     Dtype positive_slope = this->layer_param_.minrelu_param().positive_slope();
     for (int i = 0; i < count; ++i) {
-      bottom_diff[i] = top_diff[i] * ((bottom_data[i] > 0)
-          + positive_slope * (bottom_data[i] <= 0));
+      bottom_diff[i] = top_diff[i] * ((bottom_data[i] < 0)
+          + positive_slope * (bottom_data[i] >= 0));
     }
   }
 }

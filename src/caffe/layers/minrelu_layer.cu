@@ -36,7 +36,7 @@ __global__ void MinReLUBackward(const int n, const Dtype* in_diff,
     const Dtype* in_data, Dtype* out_diff, Dtype positive_slope) {
   CUDA_KERNEL_LOOP(index, n) {
     out_diff[index] = in_diff[index] * ((in_data[index] < 0)
-        + (in_data[index] <= 0) * positive_slope);
+        + (in_data[index] >= 0) * positive_slope);
   }
 }
 
